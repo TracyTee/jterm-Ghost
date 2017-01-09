@@ -61,7 +61,27 @@ public class SimpleDictionary implements GhostDictionary {
      */
     @Override
     public boolean isWord(String word) {
-        return words.contains(word);
+
+        //return words.contains(word);
+        int lo = 0;
+        int hi = words.size() - 1;
+        int mid = (lo + hi)/2;
+
+        while(lo<=hi){
+            mid =  lo + (hi -lo)/2;
+
+            //if they are equal or contains prefix
+            if(word.compareTo(words.get(mid)) == 0){
+                return true;
+            }
+            else if(word.compareTo(words.get(mid))< 0){
+                hi = mid -1;
+            }else if(word.compareTo(words.get(mid))> 0){
+                lo = mid+1;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -72,9 +92,41 @@ public class SimpleDictionary implements GhostDictionary {
      * @return
      */
     @Override
-    public String getAnyWordStartingWith(String prefix) throws NoSuchElementException {
+    public String getAnyWordStartingWith(String prefix) {
         // TODO(you): Implement using Binary Search
-        return null;
+        int lo = 0;
+        int hi = words.size() - 1;
+        int mid = (lo + hi)/2;
+
+        while(lo<=hi){
+            mid =  lo + (hi -lo)/2;
+
+            //if they are equal or contains prefix
+            if(prefix.compareTo(words.get(mid)) == 0 || hasPrefix(words.get(mid),prefix)){
+                return words.get(mid);
+            }
+            else if(prefix.compareTo(words.get(mid))< 0){
+                hi = mid -1;
+            }else if(prefix.compareTo(words.get(mid))> 0){
+                lo = mid+1;
+            }
+        }
+
+        return "NOT FOUND";
+
+    }
+
+    private static  boolean hasPrefix(String word, String prefix){
+        String temp = word.substring(0,prefix.length());
+        if(temp.equals (prefix)){
+            return true;
+        }
+        return false;
+    }
+
+    private static String getPostFix(String word, String prefix){
+        String temp = word.substring(prefix.length()+1);
+        return temp;
     }
 
     /**
@@ -90,6 +142,37 @@ public class SimpleDictionary implements GhostDictionary {
     public String getGoodWordStartingWith(String prefix) {
         String selected = null;
         // TODO(you): Implement using Binary Search + some special magic
+        selected = getAnyWordStartingWith(prefix);
+
+        //if word contains even characters as postfix then good word
+        if(getPostFix(selected,prefix).length()%2==0) {
+            return selected;
+        }else{
+            return getOtherGoodWord(selected,prefix);
+        }
+        //otherwise select different word
+        //return selected;
+    }
+
+    public String getOtherGoodWord(String selected,String prefix){
+        int lo = 0;
+        int hi = words.size() - 1;
+        int mid = (lo + hi)/2;
+
+        while(lo<=hi){
+            mid =  lo + (hi -lo)/2;
+
+            //if they are equal or contains prefix
+            if(prefix.compareTo(words.get(mid)) == 0 || hasPrefix(words.get(mid),prefix) && (selected.equals(words.get(mid)))){
+                return words.get(mid);
+            }
+            else if(prefix.compareTo(words.get(mid))< 0){
+                hi = mid -1;
+            }else if(prefix.compareTo(words.get(mid))> 0){
+                lo = mid+1;
+            }
+        }
+
         return selected;
     }
 
